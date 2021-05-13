@@ -25,10 +25,65 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>React App</title>
+
+    <script>
+      class ClerkSingleton {
+        constructor(){
+          this.outerListeners = [];
+          this.innerListeners = [];
+        }
+        addOuterListener = (listener) => {
+          console.log("Outer listener added.");
+          this.outerListeners.push(listener);
+        }
+        removeOuterListener = (listener) => {
+          console.log("Outer listener removed.");
+          this.outerListeners.splice(this.outerListeners.indexOf(listener), 1);
+        }
+
+        addInnerListener = (listener) => {
+          console.log("Inner listener added.");
+          this.innerListeners.push(listener);
+        }
+        removeInnerListener = (listener) => {
+          console.log("Inner listener removed.");
+          this.innerListeners.splice(this.innerListeners.indexOf(listener), 1);
+        }
+      }
+      window.Clerk = new ClerkSingleton();
+      window.a = 1;
+
+      function outerThenInner() {
+        console.log("-- Calling Outer then Inner.");
+        for (const listener of window.Clerk.outerListeners) {
+          listener();
+        }
+        for (const listener of window.Clerk.innerListeners) {
+          listener();
+        }
+        console.log("-- Outer then Inner done.");
+      }
+
+      function innerThenOuter() {
+        console.log("-- Calling Inner then Outer.");
+        for (const listener of window.Clerk.innerListeners) {
+          listener();
+        }
+        for (const listener of window.Clerk.outerListeners) {
+          listener();
+        }
+        console.log("-- Inner then Outer done.");
+      }
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+
+    <div style="padding: 1rem">
+      <button onclick="outerThenInner()">Outer then Inner</button>
+      <button onclick="innerThenOuter()">Inner then Outer</button>
+    </div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
